@@ -23,7 +23,7 @@ SECRET_KEYS = {
     'orgs.*.app_key',
     'github.token',
     'jira.token',
-    'pypi.pass'
+    'pypi.pass',
 }
 
 DEFAULT_CONFIG = OrderedDict(
