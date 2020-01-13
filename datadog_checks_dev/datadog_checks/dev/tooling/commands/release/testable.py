@@ -36,7 +36,7 @@ def create_jira_issue(client, teams, pr_title, pr_url, pr_body, dry_run):
 
     for team in teams:
         if dry_run:
-            echo_success('Will create a card for team {}: '.format(team), nl=False)
+            echo_success('Will create an issue for team {}: '.format(team), nl=False)
             echo_info(pr_title)
             continue
         creation_attempts = 3
@@ -61,7 +61,7 @@ def create_jira_issue(client, teams, pr_title, pr_url, pr_body, dry_run):
                 )
                 time.sleep(wait_time)
             else:
-                echo_success('Created card for team {}: '.format(team), nl=False)
+                echo_success('Created issue for team {}: '.format(team), nl=False)
                 echo_info(response.json().get('url'))
                 break
 
