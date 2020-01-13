@@ -894,3 +894,9 @@ kube_verticalpodautoscaler_status_recommendation_containerrecommendations_target
 # HELP kube_verticalpodautoscaler_status_recommendation_containerrecommendations_uncappedtarget Target resources the VPA recommends for the container ignoring bounds.
 # TYPE kube_verticalpodautoscaler_status_recommendation_containerrecommendations_uncappedtarget gauge
 kube_verticalpodautoscaler_status_recommendation_containerrecommendations_uncappedtarget{container="container1",namespace="default",resource="cpu",target_api_version="extensions/v1beta1",target_kind="Deployment",target_name="deployment1",unit="core",verticalpodautoscaler="vpa1"} 6
+# HELP kube_hpa_status_current_metrics_average_value Average metric value observed by the autoscaler.
+# TYPE kube_hpa_status_current_metrics_average_value gauge
+kube_hpa_status_current_metrics_average_value{namespace="default",hpa="dummy-nginx-ingress-controller"} 0.002
+# HELP kube_hpa_status_current_metrics_average_utilization Average metric utilization observed by the autoscaler.
+# TYPE kube_hpa_status_current_metrics_average_utilization gauge
+kube_hpa_status_current_metrics_average_utilization{namespace="default",hpa="dummy-nginx-ingress-controller"} 0
