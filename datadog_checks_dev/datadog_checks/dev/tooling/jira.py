@@ -2,17 +2,21 @@
 # All rights reserved
 # Licensed under a 3-clause BSD style license (see LICENSE)
 import json
-
 import requests
 from requests.auth import HTTPBasicAuth
-
+from .commands.console import echo_failure
 
 class JiraClient:
     API_URL = 'https://datadoghq.atlassian.net/rest/api'
     CREATE_ENDPOINT = API_URL + '/3/issue'
 
     def __init__(self, config):
-        self.auth = HTTPBasicAuth(config['jira']['user'] or None, config['jira']['token'] or None)
+        jira_email = config['jira']['user']
+        jira_token = config['jira']['token']
+        if jira_email is '' or jira_token is '':
+            echo_failure('Error: You are not authenticated for Jira. Please set your jira ddev config')
+
+        self.auth = HTTPBasicAuth(jira_email, jira_token)
         self.team_list_map = {
             'Containers': '21',
             'Core': '31',
