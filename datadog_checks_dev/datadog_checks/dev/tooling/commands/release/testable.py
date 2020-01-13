@@ -7,7 +7,7 @@ from collections import OrderedDict
 import click
 from semver import parse_version_info
 from six import iteritems
-
+import random
 from ....subprocess import run_command
 from ....utils import basepath, chdir, ensure_unicode, get_next
 from ...constants import CHANGELOG_LABEL_PREFIX, CHANGELOG_TYPE_NONE, get_root
@@ -31,17 +31,20 @@ def validate_version(ctx, param, value):
         raise click.BadParameter('needs to be in semver format x.y[.z]')
 
 
-def create_jira_issue(client, teams, pr_title, pr_url, pr_body, dry_run):
+def create_jira_issue(client, teams, pr_title, pr_url, pr_body, dry_run, pr_author, config):
     body = u'Pull request: {}\n\n{}'.format(pr_url, pr_body)
 
     for team in teams:
+        member = pick_card_member(config, pr_author, team)
+        if member:
+            echo_info("Randomly assigned issue to {}".format(member))
         if dry_run:
             echo_success('Will create an issue for team {}: '.format(team), nl=False)
             echo_info(pr_title)
             continue
         creation_attempts = 3
         for attempt in range(3):
-            rate_limited, error, response = client.create_issue(team, pr_title, body)
+            rate_limited, error, response = client.create_issue(team, pr_title, body, member)
             if rate_limited:
                 wait_time = 10
                 echo_warning(
@@ -61,8 +64,26 @@ def create_jira_issue(client, teams, pr_title, pr_url, pr_body, dry_run):
                 )
                 time.sleep(wait_time)
             else:
-                echo_success('Created issue {} for team {}'.format(response.json().get('key'), team))
+                echo_success('Created issue {} for team {} '.format(response.json().get('key'), team))
                 break
+
+
+def pick_card_member(config, author, team):
+    """Return a member to assign to the created issue.
+    In practice it returns one jira user which is not the PR author, for the given team.
+    For it to work, you a `jira_user_$team` table in your ddev configuration,
+    with keys being github users and values being their corresponding jira
+    IDs (not names).
+    For example::
+        [jira_users_integrations]
+        john = "xxxxxxxxxxxxxxxxxxxxx"
+        alice = "yyyyyyyyyyyyyyyyyyyy"
+    """
+    users = config.get('jira_users_{}'.format(team.lower()))
+    if not users:
+        return
+    member = random.choice([key for user, key in users.items() if user != author])
+    return member
 
 
 @click.command(
@@ -258,7 +279,7 @@ def testable(ctx, start_id, agent_version, milestone, dry_run):
 
         teams = [jira.label_team_map[label] for label in pr_labels if label in jira.label_team_map]
         if teams:
-            create_jira_issue(jira, teams, pr_title, pr_url, pr_body, dry_run)
+            create_jira_issue(jira, teams, pr_title, pr_url, pr_body, dry_run, pr_author, user_config)
             continue
 
         finished = False
@@ -321,6 +342,6 @@ def testable(ctx, start_id, agent_version, milestone, dry_run):
                 echo_warning('Exited at {}'.format(format_commit_id(commit_id)))
                 return
             else:
-                create_jira_issue(jira, [value], pr_title, pr_url, pr_body, dry_run)
+                create_jira_issue(jira, [value], pr_title, pr_url, pr_body, dry_run, pr_author, user_config)
 
             finished = True
