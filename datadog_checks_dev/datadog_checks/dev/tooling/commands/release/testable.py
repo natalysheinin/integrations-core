@@ -50,7 +50,6 @@ def create_jira_issue(client, teams, pr_title, pr_url, pr_body, dry_run):
                 )
                 time.sleep(wait_time)
             elif error:
-                print(error)
                 if attempt + 1 == creation_attempts:
                     echo_failure('Error: {}'.format(error))
                     break
