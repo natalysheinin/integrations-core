@@ -2,9 +2,12 @@
 # All rights reserved
 # Licensed under a 3-clause BSD style license (see LICENSE)
 import json
+
 import requests
 from requests.auth import HTTPBasicAuth
+
 from .commands.console import echo_failure
+
 
 class JiraClient:
     API_URL = 'https://datadoghq.atlassian.net/rest/api'
@@ -13,7 +16,7 @@ class JiraClient:
     def __init__(self, config):
         jira_email = config['jira']['user']
         jira_token = config['jira']['token']
-        if jira_email is '' or jira_token is '':
+        if not (jira_email and jira_token):
             echo_failure('Error: You are not authenticated for Jira. Please set your jira ddev config')
 
         self.auth = HTTPBasicAuth(jira_email, jira_token)
@@ -36,11 +39,13 @@ class JiraClient:
             'team/logs': 'Logs',
         }
 
+    # We will need two API calls until this is added: https://jira.atlassian.com/browse/JRACLOUD-69559?_ga=2.62950895.1343692979.1578939312-1018831208.1578519746
     def move_column(self, team, issue_key):
         rate_limited = False
         error = None
         url = '{}/{}/transitions'.format(self.CREATE_ENDPOINT, issue_key)
 
+        # Documentation to transition an issue's status/column: https://developer.atlassian.com/cloud/jira/platform/rest/v3/?_ga=2.39263651.1896629564.1578666825-1018831208.1578519746#api-rest-api-3-issue-issueIdOrKey-transitions-post
         data = json.dumps({'transition': {'id': self.team_list_map[team]}})
 
         headers = {"Accept": "application/json", "Content-Type": "application/json"}
@@ -66,6 +71,7 @@ class JiraClient:
         error = None
         response = None
 
+        # documentation to create a Jira issue: https://developer.atlassian.com/cloud/jira/platform/rest/v3/?_ga=2.39263651.1896629564.1578666825-1018831208.1578519746#api-rest-api-3-issue-post
         data = json.dumps(
             {
                 'fields': {
