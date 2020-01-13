@@ -23,9 +23,7 @@ SECRET_KEYS = {
     'orgs.*.app_key',
     'github.token',
     'jira.token',
-    'pypi.pass',
-    'trello.key',
-    'trello.token',
+    'pypi.pass'
 }
 
 DEFAULT_CONFIG = OrderedDict(
@@ -43,7 +41,6 @@ DEFAULT_CONFIG = OrderedDict(
         ('github', OrderedDict((('user', ''), ('token', '')))),
         ('jira', OrderedDict((('user', ''), ('token', '')))),
         ('pypi', OrderedDict((('user', ''), ('pass', '')))),
-        ('trello', OrderedDict((('key', ''), ('token', '')))),
         (
             'orgs',
             OrderedDict(
