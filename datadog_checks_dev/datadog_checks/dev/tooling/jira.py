@@ -39,13 +39,13 @@ class JiraClient:
             'team/logs': 'Logs',
         }
 
-    # We will need two API calls until this is added: https://jira.atlassian.com/browse/JRACLOUD-69559?_ga=2.62950895.1343692979.1578939312-1018831208.1578519746
+    # We will need two API calls until this is added: https://jira.atlassian.com/browse/JRACLOUD-69559?_ga=2.62950895.1343692979.1578939312-1018831208.1578519746 # noqa
     def move_column(self, team, issue_key):
         rate_limited = False
         error = None
         url = '{}/{}/transitions'.format(self.CREATE_ENDPOINT, issue_key)
 
-        # Documentation to transition an issue's status/column: https://developer.atlassian.com/cloud/jira/platform/rest/v3/?_ga=2.39263651.1896629564.1578666825-1018831208.1578519746#api-rest-api-3-issue-issueIdOrKey-transitions-post
+        # Documentation to transition an issue's status/column: https://developer.atlassian.com/cloud/jira/platform/rest/v3/?_ga=2.39263651.1896629564.1578666825-1018831208.1578519746#api-rest-api-3-issue-issueIdOrKey-transitions-post # noqa
         data = json.dumps({'transition': {'id': self.team_list_map[team]}})
 
         headers = {"Accept": "application/json", "Content-Type": "application/json"}
@@ -71,7 +71,7 @@ class JiraClient:
         error = None
         response = None
 
-        # documentation to create a Jira issue: https://developer.atlassian.com/cloud/jira/platform/rest/v3/?_ga=2.39263651.1896629564.1578666825-1018831208.1578519746#api-rest-api-3-issue-post
+        # documentation to create a Jira issue: https://developer.atlassian.com/cloud/jira/platform/rest/v3/?_ga=2.39263651.1896629564.1578666825-1018831208.1578519746#api-rest-api-3-issue-post # noqa
         data = json.dumps(
             {
                 'fields': {
