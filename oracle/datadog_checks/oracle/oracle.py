@@ -35,6 +35,8 @@ class Oracle(AgentCheck):
 
         self._connection = None
 
+        self._fix_custom_queries()
+
         self._query_manager = QueryManager(
             self,
             self.execute_query_raw,
